@@ -122,4 +122,8 @@ html.light {
   .kanban-pan-y {
     touch-action: pan-y pinch-zoom;
   }
+
+  .board-page {
+    height: calc(100dvh - 4.5rem - env(safe-area-inset-bottom, 0px));
+  }
 }

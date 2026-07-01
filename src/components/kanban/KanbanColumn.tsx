@@ -19,12 +19,11 @@ export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) 
   return (
     <div
       className={cn(
-        'flex w-[62vw] max-w-[210px] sm:w-52 shrink-0 snap-center flex-col kanban-pan-x',
+        'flex h-full min-h-0 w-[62vw] max-w-[210px] sm:w-52 shrink-0 snap-center flex-col kanban-pan-x',
         'rounded-2xl border border-border-subtle bg-surface/50',
-        'max-h-[calc(100dvh-200px)]',
       )}
     >
-      <div className="flex items-center gap-2 px-3 py-3 border-b border-border-subtle kanban-pan-x select-none">
+      <div className="flex shrink-0 items-center gap-2 px-3 py-3 border-b border-border-subtle kanban-pan-x select-none">
         <span
           className="h-2 w-2 rounded-full shrink-0"
           style={{ backgroundColor: column.color }}
@@ -39,10 +38,10 @@ export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) 
         ref={setNodeRef}
         data-scroll-container={isEmpty ? undefined : true}
         className={cn(
-          'flex-1 transition-colors',
+          'flex-1 min-h-0 transition-colors',
           isEmpty
-            ? 'kanban-pan-x flex min-h-[220px] flex-col items-center justify-center gap-2 p-4 text-center'
-            : 'kanban-pan-y overflow-y-auto overscroll-contain p-2 space-y-2 min-h-[120px]',
+            ? 'kanban-pan-x flex flex-col items-center justify-center gap-2 p-4 text-center'
+            : 'kanban-pan-y overflow-y-auto overscroll-contain p-2 space-y-2',
           isOver && 'bg-accent/5 ring-1 ring-inset ring-accent/20',
         )}
       >

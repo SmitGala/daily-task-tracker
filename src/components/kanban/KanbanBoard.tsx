@@ -30,7 +30,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 10 },
+      activationConstraint: { distance: 12 },
     }),
   )
 
@@ -81,7 +81,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
     >
       <div
         data-no-ptr
-        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pl-4 pr-8 pb-3 scrollbar-hide kanban-scroll kanban-pan-x"
+        className="flex h-full min-h-0 items-stretch gap-2.5 overflow-x-auto snap-x snap-mandatory pl-4 pr-8 scrollbar-hide kanban-scroll kanban-pan-x"
       >
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn

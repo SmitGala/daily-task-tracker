@@ -93,7 +93,7 @@ export function ProjectBoardPage() {
   }
 
   return (
-    <div>
+    <div className="board-page flex flex-col min-h-0">
       <PageHeader
         title={project.name}
         subtitle={project.description || undefined}
@@ -131,7 +131,7 @@ export function ProjectBoardPage() {
           className="mt-6"
         />
       ) : (
-        <div className="mt-4">
+        <div className="flex-1 min-h-0 flex flex-col">
           <KanbanBoard
             tasks={tasks}
             onTaskClick={handleTaskClick}
