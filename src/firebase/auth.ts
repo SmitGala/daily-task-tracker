@@ -1,7 +1,5 @@
 import {
   GoogleAuthProvider,
-  browserLocalPersistence,
-  browserSessionPersistence,
   getRedirectResult,
   setPersistence,
   signInWithPopup,
@@ -10,8 +8,14 @@ import {
   type User,
 } from 'firebase/auth'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { auth, db } from './config'
+import {
+  auth,
+  browserSessionPersistence,
+  db,
+  indexedDBLocalPersistence,
+} from './config'
 import { shouldUseAuthRedirect } from '@/utils/device'
+import { getAuthErrorMessage, isIgnorableRedirectError } from '@/utils/authErrors'
 
 const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
@@ -33,17 +37,25 @@ async function upsertUserProfile(user: User) {
   )
 }
 
+async function safeUpsertUserProfile(user: User) {
+  try {
+    await upsertUserProfile(user)
+  } catch (err) {
+    console.error('Could not save user profile (login still succeeded):', err)
+  }
+}
+
 export async function setAuthPersistence(rememberMe: boolean) {
   await setPersistence(
     auth,
-    rememberMe ? browserLocalPersistence : browserSessionPersistence,
+    rememberMe ? indexedDBLocalPersistence : browserSessionPersistence,
   )
 }
 
 export async function completeRedirectSignIn() {
   const result = await getRedirectResult(auth)
   if (result?.user) {
-    await upsertUserProfile(result.user)
+    await safeUpsertUserProfile(result.user)
   }
   return result
 }
@@ -57,7 +69,7 @@ export async function signInWithGoogle(rememberMe: boolean) {
   }
 
   const result = await signInWithPopup(auth, googleProvider)
-  await upsertUserProfile(result.user)
+  await safeUpsertUserProfile(result.user)
   return result
 }
 
@@ -65,4 +77,4 @@ export async function logOut() {
   await signOut(auth)
 }
 
-export { shouldUseAuthRedirect }
+export { shouldUseAuthRedirect, isIgnorableRedirectError, getAuthErrorMessage }

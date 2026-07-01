@@ -1,9 +1,26 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CheckSquare } from 'lucide-react'
+import { AlertTriangle, CheckSquare, Copy, ExternalLink } from 'lucide-react'
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { getSiteUrl, isIOSStandalone } from '@/utils/device'
 
 export function LoginPage() {
+  const [copied, setCopied] = useState(false)
+  const iosHomeScreen = isIOSStandalone()
+  const siteUrl = getSiteUrl()
+
+  const copyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(siteUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // fallback ignored
+    }
+  }
+
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center p-6">
       <motion.div
@@ -28,6 +45,39 @@ export function LoginPage() {
             Simple. Fast. Just for you.
           </p>
         </div>
+
+        {iosHomeScreen && (
+          <Card className="mb-4 border-warning/30 bg-warning/5 p-4">
+            <div className="flex gap-3">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-warning mt-0.5" />
+              <div className="space-y-3 text-sm">
+                <p className="font-medium text-text-primary">iPhone Home Screen tip</p>
+                <p className="text-text-secondary leading-relaxed">
+                  Google login on iPhone shortcuts often fails. Use{' '}
+                  <strong className="text-text-primary">Safari</strong> instead:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-text-secondary text-xs">
+                  <li>Copy the link below</li>
+                  <li>Paste in Safari and open</li>
+                  <li>Sign in with Google there</li>
+                  <li>Bookmark Safari — don&apos;t use Home Screen for login</li>
+                </ol>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" className="flex-1" onClick={copyUrl}>
+                    <Copy className="h-4 w-4" />
+                    {copied ? 'Copied!' : 'Copy link'}
+                  </Button>
+                  <a href={siteUrl} className="flex-1" target="_blank" rel="noopener noreferrer">
+                    <Button variant="secondary" size="sm" className="w-full">
+                      <ExternalLink className="h-4 w-4" />
+                      Open Safari
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Card variant="glass" className="p-6">
           <GoogleSignInButton />

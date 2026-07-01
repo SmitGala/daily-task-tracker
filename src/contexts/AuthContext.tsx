@@ -7,7 +7,13 @@ import {
   type ReactNode,
 } from 'react'
 import { onAuthStateChanged, type User } from 'firebase/auth'
-import { completeRedirectSignIn, logOut, signInWithGoogle } from '@/firebase/auth'
+import {
+  completeRedirectSignIn,
+  getAuthErrorMessage,
+  isIgnorableRedirectError,
+  logOut,
+  signInWithGoogle,
+} from '@/firebase/auth'
 import { auth } from '@/firebase/config'
 
 interface AuthContextValue {
@@ -34,26 +40,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     let active = true
+    let unsubscribe: (() => void) | undefined
 
-    completeRedirectSignIn()
-      .catch((err) => {
-        if (!active) return
-        const message =
-          err instanceof Error ? err.message : 'Failed to complete sign in.'
-        setError(message)
-      })
-      .finally(() => {
+    ;(async () => {
+      try {
+        await completeRedirectSignIn()
+      } catch (err) {
+        if (active && !isIgnorableRedirectError(err)) {
+          setError(getAuthErrorMessage(err))
+        }
+      } finally {
         if (active) setRedirecting(false)
-      })
+      }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)
-      setLoading(false)
-    })
+      if (!active) return
+
+      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser)
+        setLoading(false)
+      })
+    })()
 
     return () => {
       active = false
-      unsubscribe()
+      unsubscribe?.()
     }
   }, [])
 
@@ -64,8 +74,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await signInWithGoogle(rememberMe)
     } catch (err) {
       setRedirecting(false)
-      const message =
-        err instanceof Error ? err.message : 'Failed to sign in. Please try again.'
+      const message = getAuthErrorMessage(err)
       setError(message)
       throw err
     }
@@ -76,8 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await logOut()
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to sign out. Please try again.'
+      const message = getAuthErrorMessage(err)
       setError(message)
       throw err
     }
