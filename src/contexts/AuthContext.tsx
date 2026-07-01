@@ -9,19 +9,22 @@ import {
 import { onAuthStateChanged, type User } from 'firebase/auth'
 import {
   completeRedirectSignIn,
-  getAuthErrorMessage,
-  isIgnorableRedirectError,
   logOut,
+  registerWithEmail,
+  signInWithEmail,
   signInWithGoogle,
 } from '@/firebase/auth'
 import { auth } from '@/firebase/config'
+import { getAuthErrorMessage } from '@/utils/authErrors'
 
 interface AuthContextValue {
   user: User | null
   loading: boolean
   redirecting: boolean
   error: string | null
-  signIn: (rememberMe: boolean) => Promise<void>
+  signInWithGoogle: (rememberMe: boolean) => Promise<void>
+  signInWithEmail: (email: string, password: string, rememberMe: boolean) => Promise<void>
+  registerWithEmail: (email: string, password: string, rememberMe: boolean) => Promise<void>
   signOut: () => Promise<void>
   clearError: () => void
 }
@@ -43,15 +46,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     let unsubscribe: (() => void) | undefined
 
     ;(async () => {
-      try {
-        await completeRedirectSignIn()
-      } catch (err) {
-        if (active && !isIgnorableRedirectError(err)) {
-          setError(getAuthErrorMessage(err))
-        }
-      } finally {
-        if (active) setRedirecting(false)
-      }
+      setRedirecting(true)
+      await completeRedirectSignIn()
+      if (active) setRedirecting(false)
 
       if (!active) return
 
@@ -67,26 +64,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
-  const signIn = useCallback(async (rememberMe: boolean) => {
+  const handleGoogleSignIn = useCallback(async (rememberMe: boolean) => {
     setError(null)
     setRedirecting(true)
     try {
       await signInWithGoogle(rememberMe)
     } catch (err) {
       setRedirecting(false)
-      const message = getAuthErrorMessage(err)
-      setError(message)
+      setError(getAuthErrorMessage(err))
       throw err
     }
   }, [])
+
+  const handleEmailSignIn = useCallback(
+    async (email: string, password: string, rememberMe: boolean) => {
+      setError(null)
+      try {
+        await signInWithEmail(email, password, rememberMe)
+      } catch (err) {
+        setError(getAuthErrorMessage(err))
+        throw err
+      }
+    },
+    [],
+  )
+
+  const handleEmailRegister = useCallback(
+    async (email: string, password: string, rememberMe: boolean) => {
+      setError(null)
+      try {
+        await registerWithEmail(email, password, rememberMe)
+      } catch (err) {
+        setError(getAuthErrorMessage(err))
+        throw err
+      }
+    },
+    [],
+  )
 
   const signOut = useCallback(async () => {
     setError(null)
     try {
       await logOut()
     } catch (err) {
-      const message = getAuthErrorMessage(err)
-      setError(message)
+      setError(getAuthErrorMessage(err))
       throw err
     }
   }, [])
@@ -94,8 +115,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const clearError = useCallback(() => setError(null), [])
 
   const value = useMemo(
-    () => ({ user, loading, redirecting, error, signIn, signOut, clearError }),
-    [user, loading, redirecting, error, signIn, signOut, clearError],
+    () => ({
+      user,
+      loading,
+      redirecting,
+      error,
+      signInWithGoogle: handleGoogleSignIn,
+      signInWithEmail: handleEmailSignIn,
+      registerWithEmail: handleEmailRegister,
+      signOut,
+      clearError,
+    }),
+    [
+      user,
+      loading,
+      redirecting,
+      error,
+      handleGoogleSignIn,
+      handleEmailSignIn,
+      handleEmailRegister,
+      signOut,
+      clearError,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
