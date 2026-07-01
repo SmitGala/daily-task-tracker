@@ -17,7 +17,7 @@ export function AppLayout() {
   return (
     <PullToRefresh>
       <div className="min-h-dvh flex flex-col bg-background">
-      <main className="flex-1 pb-24 overflow-x-hidden bg-background">
+      <main className="flex-1 pb-nav-offset overflow-x-hidden bg-background">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0.92, y: 4 }}

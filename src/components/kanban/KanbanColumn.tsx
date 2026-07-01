@@ -17,9 +17,9 @@ export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) 
   return (
     <div
       className={cn(
-        'flex w-[85vw] sm:w-72 shrink-0 snap-center flex-col',
+        'flex w-[62vw] max-w-[210px] sm:w-52 shrink-0 snap-center flex-col',
         'rounded-2xl border border-border-subtle bg-surface/50',
-        'max-h-[calc(100dvh-220px)]',
+        'max-h-[calc(100dvh-200px)]',
       )}
     >
       <div className="flex items-center gap-2 px-3 py-3 border-b border-border-subtle">

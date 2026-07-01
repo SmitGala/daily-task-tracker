@@ -30,7 +30,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 12 },
+      activationConstraint: { distance: 10 },
     }),
   )
 
@@ -81,7 +81,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
     >
       <div
         data-no-ptr
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 pb-4 -mx-0 scrollbar-hide touch-pan-x"
+        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pl-4 pr-8 pb-3 scrollbar-hide touch-pan-x"
       >
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn
@@ -95,7 +95,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
 
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <div className="w-[min(280px,85vw)] rotate-1 scale-[1.02]">
+          <div className="w-[62vw] max-w-[210px] sm:w-52 rotate-1 scale-[1.02]">
             <TaskCard task={activeTask} isDragging />
           </div>
         ) : null}

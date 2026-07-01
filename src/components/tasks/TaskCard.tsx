@@ -9,6 +9,7 @@ interface TaskCardProps {
   task: Task
   onClick?: () => void
   isDragging?: boolean
+  showDragHint?: boolean
   dragHandleProps?: HTMLAttributes<HTMLButtonElement>
 }
 
@@ -16,6 +17,7 @@ export function TaskCard({
   task,
   onClick,
   isDragging,
+  showDragHint,
   dragHandleProps,
 }: TaskCardProps) {
   const dueLabel = formatDueDate(task.dueDate)
@@ -24,10 +26,11 @@ export function TaskCard({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border-subtle bg-surface-elevated p-3',
+        'rounded-xl border border-border-subtle bg-surface-elevated p-2.5',
         'transition-shadow duration-200',
         isDragging && 'shadow-lg ring-2 ring-accent/40 opacity-90',
-        onClick && 'cursor-pointer hover:border-border active:scale-[0.99]',
+        onClick && !isDragging && 'cursor-pointer hover:border-border active:scale-[0.99]',
+        (showDragHint || dragHandleProps) && 'cursor-grab active:cursor-grabbing',
       )}
       onClick={isDragging ? undefined : onClick}
       role={onClick && !isDragging ? 'button' : undefined}
@@ -43,22 +46,31 @@ export function TaskCard({
           : undefined
       }
     >
-      <div className="flex items-start gap-2">
-        {dragHandleProps && (
-          <button
-            type="button"
-            className={cn(
-              'shrink-0 self-stretch flex items-center justify-center',
-              'min-w-[44px] -ml-1 px-1 touch-none select-none',
-              'text-text-muted hover:text-text-secondary',
-              'cursor-grab active:cursor-grabbing active:text-accent',
-            )}
-            {...dragHandleProps}
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Drag task"
-          >
-            <GripVertical className="h-5 w-5" strokeWidth={2} />
-          </button>
+      <div className="flex items-start gap-1.5">
+        {(showDragHint || dragHandleProps) && (
+          dragHandleProps ? (
+            <button
+              type="button"
+              className={cn(
+                'shrink-0 self-stretch flex items-center justify-center',
+                'w-14 -ml-0.5 touch-none select-none',
+                'text-text-muted hover:text-text-secondary',
+                'cursor-grab active:cursor-grabbing active:text-accent',
+              )}
+              {...dragHandleProps}
+              onClick={(e) => e.stopPropagation()}
+              aria-label="Drag task"
+            >
+              <GripVertical className="h-5 w-5" strokeWidth={2} />
+            </button>
+          ) : (
+            <div
+              className="shrink-0 self-stretch flex items-center justify-center w-8 -ml-0.5 text-text-muted/70 pointer-events-none"
+              aria-hidden
+            >
+              <GripVertical className="h-4 w-4" strokeWidth={2} />
+            </div>
+          )
         )}
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-start justify-between gap-2">

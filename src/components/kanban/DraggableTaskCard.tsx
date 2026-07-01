@@ -24,12 +24,14 @@ export function DraggableTaskCard({ task, onClick }: DraggableTaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(isDragging && 'opacity-50 z-10', 'touch-manipulation')}
+      {...listeners}
+      {...attributes}
     >
       <TaskCard
         task={task}
         onClick={onClick}
-        dragHandleProps={{ ...listeners, ...attributes }}
         isDragging={isDragging}
+        showDragHint
       />
     </div>
   )

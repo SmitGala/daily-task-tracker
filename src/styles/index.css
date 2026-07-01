@@ -66,7 +66,9 @@ html.light {
   }
 
   body {
-    @apply bg-background text-text-primary font-sans min-h-dvh;
+    @apply bg-background text-text-primary font-sans;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
     overscroll-behavior-y: contain;
     background-image:
       radial-gradient(ellipse 80% 50% at 50% -20%, var(--theme-gradient-1), transparent),
@@ -74,7 +76,7 @@ html.light {
   }
 
   #root {
-    @apply min-h-dvh;
+    @apply min-h-dvh min-h-[100dvh];
   }
 }
 
@@ -84,6 +86,14 @@ html.light {
   }
 
   .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pb-nav-offset {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .nav-safe-area {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
