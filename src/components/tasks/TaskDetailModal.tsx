@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Clock, History, Pencil, Trash2 } from 'lucide-react'
-import { STATUS_OPTIONS } from '@/constants/tasks'
+import { ArrowRight, Clock, History, Pencil, Trash2 } from 'lucide-react'
+import { KANBAN_COLUMNS, STATUS_OPTIONS } from '@/constants/tasks'
 import { PriorityBadge } from '@/components/tasks/PriorityBadge'
 import { TaskForm } from '@/components/tasks/TaskForm'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
-import { Select } from '@/components/ui/Select'
 import { useTaskHistory } from '@/hooks/useProjectTasks'
 import {
   deleteTask,
@@ -73,6 +72,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
   }
 
   const dueLabel = formatDueDate(task.dueDate)
+  const moveOptions = STATUS_OPTIONS.filter((opt) => opt.value !== task.status)
 
   return (
     <Modal open={open} onClose={handleClose} title={editing ? 'Edit Task' : task.title}>
@@ -100,14 +100,12 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
         </div>
       ) : (
         <div className="space-y-5">
-          <div className="flex items-center gap-2">
+          <div className="space-y-2">
             <PriorityBadge priority={task.priority} />
-            <span className="text-xs text-text-muted">
-              {getStatusLabel(task.status)}
-            </span>
-            {dueLabel && (
-              <span className="text-xs text-text-muted">· Due {dueLabel}</span>
-            )}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-muted">
+              <span>{getStatusLabel(task.status)}</span>
+              {dueLabel && <span>· Due {dueLabel}</span>}
+            </div>
           </div>
 
           {task.tags.length > 0 && (
@@ -188,18 +186,36 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
             )}
           </section>
 
-          <Select
-            label="Move task"
-            value={task.status}
-            disabled={moving}
-            onChange={(e) => handleMove(e.target.value as TaskStatus)}
-          >
-            {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
+          {moveOptions.length > 0 && (
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">
+                Move to
+              </h3>
+              <div className="grid gap-2">
+                {moveOptions.map((opt) => {
+                  const column = KANBAN_COLUMNS.find((c) => c.id === opt.value)
+                  return (
+                    <Button
+                      key={opt.value}
+                      variant="secondary"
+                      className="w-full justify-between"
+                      loading={moving}
+                      onClick={() => handleMove(opt.value)}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 rounded-full shrink-0"
+                          style={{ backgroundColor: column?.color }}
+                        />
+                        Move to {opt.label}
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-text-muted" />
+                    </Button>
+                  )
+                })}
+              </div>
+            </section>
+          )}
 
           <div className="flex gap-3 pt-1">
             <Button

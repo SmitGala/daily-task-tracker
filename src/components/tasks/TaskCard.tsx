@@ -22,6 +22,7 @@ export function TaskCard({
 }: TaskCardProps) {
   const dueLabel = formatDueDate(task.dueDate)
   const overdue = isOverdue(task.dueDate, task.status)
+  const hasDragHandle = !!(showDragHint || dragHandleProps)
 
   return (
     <div
@@ -30,7 +31,6 @@ export function TaskCard({
         'transition-shadow duration-200',
         isDragging && 'shadow-lg ring-2 ring-accent/40 opacity-90',
         onClick && !isDragging && 'cursor-pointer hover:border-border active:scale-[0.99]',
-        (showDragHint || dragHandleProps) && 'cursor-grab active:cursor-grabbing',
       )}
       onClick={isDragging ? undefined : onClick}
       role={onClick && !isDragging ? 'button' : undefined}
@@ -46,14 +46,14 @@ export function TaskCard({
           : undefined
       }
     >
-      <div className="flex items-start gap-1.5">
-        {(showDragHint || dragHandleProps) && (
+      <div className="flex items-stretch gap-1">
+        {hasDragHandle && (
           dragHandleProps ? (
             <button
               type="button"
               className={cn(
-                'shrink-0 self-stretch flex items-center justify-center',
-                'w-14 -ml-0.5 touch-none select-none',
+                'shrink-0 flex items-center justify-center',
+                'w-11 -ml-0.5 touch-none select-none self-stretch',
                 'text-text-muted hover:text-text-secondary',
                 'cursor-grab active:cursor-grabbing active:text-accent',
               )}
@@ -65,23 +65,22 @@ export function TaskCard({
             </button>
           ) : (
             <div
-              className="shrink-0 self-stretch flex items-center justify-center w-8 -ml-0.5 text-text-muted/70 pointer-events-none"
+              className="shrink-0 flex items-center justify-center w-7 -ml-0.5 text-text-muted/70 pointer-events-none self-stretch"
               aria-hidden
             >
               <GripVertical className="h-4 w-4" strokeWidth={2} />
             </div>
           )
         )}
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium text-text-primary leading-snug">
-              {task.title}
-            </p>
-            <PriorityBadge priority={task.priority} />
-          </div>
+        <div className="min-w-0 flex-1 space-y-1.5 py-0.5">
+          <p className="text-[15px] font-semibold text-text-primary leading-snug line-clamp-3">
+            {task.title}
+          </p>
+
+          <PriorityBadge priority={task.priority} />
 
           {(dueLabel || task.tags.length > 0) && (
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
               {dueLabel && (
                 <span
                   className={cn(

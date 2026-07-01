@@ -109,4 +109,17 @@ html.light {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  .kanban-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .kanban-pan-x {
+    touch-action: pan-x pinch-zoom;
+  }
+
+  .kanban-pan-y {
+    touch-action: pan-y pinch-zoom;
+  }
 }

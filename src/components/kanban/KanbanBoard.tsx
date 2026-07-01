@@ -81,7 +81,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
     >
       <div
         data-no-ptr
-        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pl-4 pr-8 pb-3 scrollbar-hide touch-pan-x"
+        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pl-4 pr-8 pb-3 scrollbar-hide kanban-scroll kanban-pan-x"
       >
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn

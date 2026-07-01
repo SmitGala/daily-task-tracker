@@ -1,4 +1,5 @@
 import { useDroppable } from '@dnd-kit/core'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { KANBAN_COLUMNS } from '@/constants/tasks'
 import { DraggableTaskCard } from '@/components/kanban/DraggableTaskCard'
 import type { Task, TaskStatus } from '@/types'
@@ -13,16 +14,17 @@ interface KanbanColumnProps {
 export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) {
   const column = KANBAN_COLUMNS.find((c) => c.id === status)!
   const { setNodeRef, isOver } = useDroppable({ id: status })
+  const isEmpty = tasks.length === 0
 
   return (
     <div
       className={cn(
-        'flex w-[62vw] max-w-[210px] sm:w-52 shrink-0 snap-center flex-col',
+        'flex w-[62vw] max-w-[210px] sm:w-52 shrink-0 snap-center flex-col kanban-pan-x',
         'rounded-2xl border border-border-subtle bg-surface/50',
         'max-h-[calc(100dvh-200px)]',
       )}
     >
-      <div className="flex items-center gap-2 px-3 py-3 border-b border-border-subtle">
+      <div className="flex items-center gap-2 px-3 py-3 border-b border-border-subtle kanban-pan-x select-none">
         <span
           className="h-2 w-2 rounded-full shrink-0"
           style={{ backgroundColor: column.color }}
@@ -35,16 +37,26 @@ export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) 
 
       <div
         ref={setNodeRef}
-        data-scroll-container
+        data-scroll-container={isEmpty ? undefined : true}
         className={cn(
-          'flex-1 overflow-y-auto overscroll-contain p-2 space-y-2 min-h-[120px] transition-colors touch-pan-y',
+          'flex-1 transition-colors',
+          isEmpty
+            ? 'kanban-pan-x flex min-h-[220px] flex-col items-center justify-center gap-2 p-4 text-center'
+            : 'kanban-pan-y overflow-y-auto overscroll-contain p-2 space-y-2 min-h-[120px]',
           isOver && 'bg-accent/5 ring-1 ring-inset ring-accent/20',
         )}
       >
-        {tasks.length === 0 ? (
-          <p className="text-xs text-text-muted text-center py-8 px-2">
-            Drop tasks here
-          </p>
+        {isEmpty ? (
+          <>
+            <div className="flex items-center gap-1 text-text-muted/60">
+              <ChevronLeft className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4" />
+            </div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              Swipe left or right to switch columns
+            </p>
+            <p className="text-[10px] text-text-muted/70">Drop tasks here</p>
+          </>
         ) : (
           tasks.map((task) => (
             <DraggableTaskCard

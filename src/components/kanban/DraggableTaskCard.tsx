@@ -23,15 +23,13 @@ export function DraggableTaskCard({ task, onClick }: DraggableTaskCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={cn(isDragging && 'opacity-50 z-10', 'touch-manipulation')}
-      {...listeners}
-      {...attributes}
+      className={cn(isDragging && 'opacity-50 z-10')}
     >
       <TaskCard
         task={task}
         onClick={onClick}
         isDragging={isDragging}
-        showDragHint
+        dragHandleProps={{ ...listeners, ...attributes }}
       />
     </div>
   )
