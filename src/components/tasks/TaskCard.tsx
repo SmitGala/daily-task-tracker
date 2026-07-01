@@ -29,9 +29,9 @@ export function TaskCard({
         isDragging && 'shadow-lg ring-2 ring-accent/40 opacity-90',
         onClick && 'cursor-pointer hover:border-border active:scale-[0.99]',
       )}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      onClick={isDragging ? undefined : onClick}
+      role={onClick && !isDragging ? 'button' : undefined}
+      tabIndex={onClick && !isDragging ? 0 : undefined}
       onKeyDown={
         onClick
           ? (e) => {
@@ -47,12 +47,17 @@ export function TaskCard({
         {dragHandleProps && (
           <button
             type="button"
-            className="mt-0.5 shrink-0 touch-none text-text-muted hover:text-text-secondary cursor-grab active:cursor-grabbing"
+            className={cn(
+              'shrink-0 self-stretch flex items-center justify-center',
+              'min-w-[44px] -ml-1 px-1 touch-none select-none',
+              'text-text-muted hover:text-text-secondary',
+              'cursor-grab active:cursor-grabbing active:text-accent',
+            )}
             {...dragHandleProps}
             onClick={(e) => e.stopPropagation()}
             aria-label="Drag task"
           >
-            <GripVertical className="h-4 w-4" />
+            <GripVertical className="h-5 w-5" strokeWidth={2} />
           </button>
         )}
         <div className="min-w-0 flex-1 space-y-2">

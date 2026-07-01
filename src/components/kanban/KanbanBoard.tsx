@@ -3,7 +3,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
-  TouchSensor,
+  closestCorners,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -29,8 +29,9 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
   const addToast = useToastStore((s) => s.addToast)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 12 },
+    }),
   )
 
   const grouped = groupTasksByStatus(tasks)
@@ -73,10 +74,15 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={closestCorners}
+      autoScroll={{ threshold: { x: 0.15, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 pb-4 -mx-0 scrollbar-hide">
+      <div
+        data-no-ptr
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 pb-4 -mx-0 scrollbar-hide touch-pan-x"
+      >
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn
             key={column.id}
@@ -89,7 +95,7 @@ export function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
 
       <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <div className="w-[280px] rotate-2">
+          <div className="w-[min(280px,85vw)] rotate-1 scale-[1.02]">
             <TaskCard task={activeTask} isDragging />
           </div>
         ) : null}

@@ -28,7 +28,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" data-no-ptr>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -2,6 +2,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import type { Task } from '@/types'
+import { cn } from '@/utils'
 
 interface DraggableTaskCardProps {
   task: Task
@@ -22,12 +23,13 @@ export function DraggableTaskCard({ task, onClick }: DraggableTaskCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={isDragging ? 'opacity-40' : undefined}
+      className={cn(isDragging && 'opacity-50 z-10', 'touch-manipulation')}
     >
       <TaskCard
         task={task}
         onClick={onClick}
         dragHandleProps={{ ...listeners, ...attributes }}
+        isDragging={isDragging}
       />
     </div>
   )

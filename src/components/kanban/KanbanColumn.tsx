@@ -35,8 +35,9 @@ export function KanbanColumn({ status, tasks, onTaskClick }: KanbanColumnProps) 
 
       <div
         ref={setNodeRef}
+        data-scroll-container
         className={cn(
-          'flex-1 overflow-y-auto p-2 space-y-2 min-h-[120px] transition-colors',
+          'flex-1 overflow-y-auto overscroll-contain p-2 space-y-2 min-h-[120px] transition-colors touch-pan-y',
           isOver && 'bg-accent/5 ring-1 ring-inset ring-accent/20',
         )}
       >

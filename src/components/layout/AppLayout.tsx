@@ -1,12 +1,22 @@
+import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { BottomNav } from './BottomNav'
+import { PullToRefresh } from './PullToRefresh'
 
 export function AppLayout() {
   const location = useLocation()
 
+  useEffect(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   return (
-    <div className="min-h-dvh flex flex-col bg-background">
+    <PullToRefresh>
+      <div className="min-h-dvh flex flex-col bg-background">
       <main className="flex-1 pb-24 overflow-x-hidden bg-background">
         <motion.div
           key={location.pathname}
@@ -18,6 +28,7 @@ export function AppLayout() {
         </motion.div>
       </main>
       <BottomNav />
-    </div>
+      </div>
+    </PullToRefresh>
   )
 }
